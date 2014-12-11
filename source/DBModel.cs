@@ -6,6 +6,14 @@ using System.Threading.Tasks;
 
 namespace DK.Active_Records
 {
+    public enum whereTyp
+    {
+        like,
+        greater,
+        less,
+        equal
+    }
+
     public class DBModel<T> : IDBModel where T : IDBModel
     {
         #region Properties
@@ -93,6 +101,13 @@ namespace DK.Active_Records
         public void setProperties(Dictionary<string, object> dict)
         {
             properties = dict;
+        }
+        /// <summary>
+        /// Get Enumerator for generic
+        /// </summary>
+        public Dictionary<string, object> getProperties()
+        {
+            return properties;
         }
         /// <summary>
         /// Save object
@@ -197,6 +212,17 @@ namespace DK.Active_Records
             // Run Command
             SQL.run(sql);
         }
+        /// <summary>
+        /// Delete object data
+        /// </summary>
+        public void delete()
+        {
+            // Set SQL
+            string sql = "DELETE FROM " + tableName + " WHERE " + idKey + " = " + idValue;
+
+            // Run Command
+            SQL.run(sql);
+        }
         #endregion
 
         #region Static Functions
@@ -211,6 +237,114 @@ namespace DK.Active_Records
 
             // Run SQL
             foreach (var item in SQL.select("SELECT * FROM " + tableName))
+            {
+                // Create item
+                DBModel<T> dbItem = new DBModel<T>();
+                // Add properties
+                dbItem.setProperties(item);
+                // Cast and add it to list
+                list.Add(dbItem.castToChild());
+            }
+
+            // Return list
+            return list;
+        }
+        /// <summary>
+        /// Get all where
+        /// </summary>
+        /// <param name="whereString">The SQL where syntax</param>
+        /// <returns></returns>
+        public static List<T> where(string whereString)
+        {
+            // Create list
+            List<T> list = new List<T>();
+
+            // Run SQL
+            foreach (var item in SQL.select("SELECT * FROM " + tableName + " WHERE " + whereString))
+            {
+                // Create item
+                DBModel<T> dbItem = new DBModel<T>();
+                // Add properties
+                dbItem.setProperties(item);
+                // Cast and add it to list
+                list.Add(dbItem.castToChild());
+            }
+
+            // Return list
+            return list;
+        }
+        /// <summary>
+        /// Get items where
+        /// </summary>
+        /// <param name="field">Field Name</param>
+        /// <param name="value">To search value</param>
+        /// <param name="type">Type of search</param>
+        /// <returns></returns>
+        public static List<T> where(string field, object value, whereTyp type = whereTyp.like)
+        {
+            // Create list
+            List<T> list = new List<T>();
+
+            // Create Where String
+            string whereString = field;
+            if (value.GetType() == typeof(string))
+                value = "'" + value + "'";
+
+            switch (type)
+            {
+                case whereTyp.equal:
+                    whereString += " = " + value.ToString();
+                    break;
+                case whereTyp.greater:
+                    whereString += " > " + value.ToString();
+                    break;
+                case whereTyp.less:
+                    whereString += " < " + value.ToString();
+                    break;
+                case whereTyp.like:
+                    whereString += " LIKE " + value.ToString();
+                    break;
+            }
+
+            // Run SQL
+            foreach (var item in SQL.select("SELECT * FROM " + tableName + " WHERE " + whereString))
+            {
+                // Create item
+                DBModel<T> dbItem = new DBModel<T>();
+                // Add properties
+                dbItem.setProperties(item);
+                // Cast and add it to list
+                list.Add(dbItem.castToChild());
+            }
+
+            // Return list
+            return list;
+        }
+        /// <summary>
+        /// Search objects
+        /// </summary>
+        /// <param name="searchString">Text to search</param>
+        /// <param name="fields">Fields to search</param>
+        /// <returns></returns>
+        public static List<T> search(string searchString, params string[] fields)
+        {
+            // Create List
+            List<T> list = new List<T>();
+
+            // Create SQL
+            string sql = "SELECT * FROM " + tableName;
+            string sqlWhere = " ";
+
+            // Create Where
+            foreach (var field in fields)
+            {
+                sqlWhere += field + " LIKE '%" + searchString + "%' ";
+                if (fields.Last() != field)
+                    sqlWhere += " AND ";
+            }
+
+            // Run SQL
+            foreach (var item in SQL.select(sql + sqlWhere))
             {
                 // Create item
                 DBModel<T> dbItem = new DBModel<T>();
