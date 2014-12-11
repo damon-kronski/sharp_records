@@ -1,9 +1,16 @@
 sharp_records
 =============
 
-An active records library for c#.
+A very simple active records library for c#.
 
-How to Use it:
+Comming Features
+===
+The following features will be added soon:
+- Where Function
+- Search Function (easier then where)
+- Delete Function
+
+How to Use it
 ===
 First create the sql table (Here named exampleitem, always lowercase)
 
