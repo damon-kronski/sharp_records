@@ -2,6 +2,8 @@ sharp_records
 =============
 
 A very simple active records library for c#.
+You can download the dll here:
+https://www.dropbox.com/s/ezxjyxyhdlxxn0y/Active%20Records.dll?dl=0
 
 Comming Features
 ===
