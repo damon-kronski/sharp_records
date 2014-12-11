@@ -3,14 +3,14 @@ sharp_records
 
 A very simple active records library for c#.
 You can download the dll here:
-https://www.dropbox.com/s/ezxjyxyhdlxxn0y/Active%20Records.dll?dl=0
+https://www.dropbox.com/sh/pzwuwubsx14ymhh/AADQ9-b-YXXB6r18beLDo_S1a?dl=0
 
 Comming Features
 ===
 The following features will be added soon:
-- Where Function
-- Search Function (easier then where)
-- Delete Function
+- Better search
+- Custom Tables
+- Custom Settings
 
 How to Use it
 ===
@@ -42,6 +42,15 @@ To read all items you have to do this:
 ```C#
 List<ExampleItem> items = ExampleItem.getAll();
 ```
+If you wanna do searchs/wheres you can do this:
+```C#
+// Where Raw
+List<ExampleItem> items = ExampleItem.where(" value = 'test'");
+// Where
+List<ExampleItem> items = ExampleItem.where("value","test",whereTyp.equal);
+// Search
+List<ExampleItem> items = ExampleItem.search("test","column1","columnd2","column3",...);
+```
 To add a new item do this:
 ```C#
 ExampleItem item = new ExampleItem(); 
@@ -52,4 +61,8 @@ To update an item do this (items is the list of before):
 ```C#
 items[0]["value"] = "changed"; 
 items[0].save(); 
+```
+To delete an item do this (items is the list of before):
+```C#
+items[0].delete(); 
 ```
